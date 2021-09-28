@@ -1,23 +1,34 @@
 <template>
   <div class="singer" v-loading="!singerList.length">
-    <IndexList :data="singerList"></IndexList>
+    <indexList :data="singerList" @select="selectSinger"></indexList>
+    <router-view :singer="selectedSinger"></router-view>
   </div>
 </template>
 
 <script>
 import { getSingerList } from '@/service/singer'
-import IndexList from '@/components/base/index-list/index-list.vue'
+import indexList from '@/components/base/index-list/index-list.vue'
 
 export default {
   name: 'singer',
 
   components: {
-    IndexList
+    indexList
   },
 
   data() {
     return {
-      singerList: []
+      singerList: [],
+      selectedSinger: null
+    }
+  },
+
+  methods: {
+    selectSinger(singer) {
+      this.selectedSinger = singer
+      this.$router.push({
+        path: `/singer/${singer.mid}`
+      })
     }
   },
 
@@ -36,5 +47,4 @@ export default {
   width: 100%;
   bottom: 0;
 }
-
 </style>
