@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     title() {
-      return this.singer && this.singer.title
+      return this.singer && this.singer.name
     },
     pic() {
       return this.singer && this.singer.pic

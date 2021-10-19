@@ -16,6 +16,8 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      :probe-type="3"
+      @scroll="onScroll"
     >
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
@@ -27,6 +29,8 @@
 <script>
 import songList from '@/components/base/song-list/song-list.vue'
 import scroll from '@/components/base/scroll/scroll.vue'
+
+const RESERVED_HEIGHT = 40
 
 export default {
   name: 'music-list',
@@ -47,13 +51,37 @@ export default {
   },
   data() {
     return {
-      bgImageHeight: 0
+      bgImageHeight: 0,
+      scrollY: 0,
+      maxTranslateY: 0
     }
   },
   computed: {
     bgImageStyle() {
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let height = 0
+      let paddingTop = '70%'
+      let translateZ = 0
+
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10
+        paddingTop = 0
+        translateZ = 1
+        height = `${RESERVED_HEIGHT}px`
+      }
+
+      let scale = 1
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.bgImageHeight)
+      }
+
       return {
-        backgroundImage: `url(${this.pic})`
+        zIndex,
+        height,
+        paddingTop,
+        backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale})translateZ(${translateZ}px)`
       }
     },
     scrollStyle() {
@@ -64,10 +92,14 @@ export default {
   },
   mounted() {
     this.bgImageHeight = this.$refs.bgImage.clientHeight
+    this.maxTranslateY = this.bgImageHeight - RESERVED_HEIGHT
   },
   methods: {
     goBack() {
       this.$router.back()
+    },
+    onScroll(pos) {
+      this.scrollY = -pos.y
     }
   }
 }
@@ -107,8 +139,6 @@ export default {
     .bg-image {
       position: relative;
       width: 100%;
-      height: 0;
-      padding-top: 70%;
       overflow: hidden;
       transform-origin: top;
       background-size: cover;
