@@ -10,17 +10,30 @@
       :style="bgImageStyle"
       ref="bgImage"
     >
-      <div class="filter"></div>
+      <div
+        class="play-btn-wrapper"
+        :style="playBtnStyle"
+      >
+        <div class="play-btn" @click="random">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
+      <div
+        class="filter"
+        :style="styleFilter"
+      ></div>
     </div>
     <scroll
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      v-no-result:[noResultText]="noResult"
       :probe-type="3"
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select="selectItem"></song-list>
       </div>
     </scroll>
   </div>
@@ -29,6 +42,7 @@
 <script>
 import songList from '@/components/base/song-list/song-list.vue'
 import scroll from '@/components/base/scroll/scroll.vue'
+import { mapActions } from 'vuex'
 
 const RESERVED_HEIGHT = 40
 
@@ -47,7 +61,11 @@ export default {
     },
     title: String,
     pic: String,
-    loading: Boolean
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲'
+    }
   },
   data() {
     return {
@@ -57,6 +75,18 @@ export default {
     }
   },
   computed: {
+    noResult() {
+      return !this.loading && !this.songs.length
+    },
+    playBtnStyle() {
+      let display = ''
+      if (this.scrollY >= this.maxTranslateY) {
+        display = 'none'
+      }
+      return {
+        display
+      }
+    },
     bgImageStyle() {
       const scrollY = this.scrollY
       let zIndex = 0
@@ -88,6 +118,17 @@ export default {
       return {
         top: `${this.bgImageHeight}px`
       }
+    },
+    styleFilter() {
+      let blur = 0
+      const scrollY = this.scrollY
+      const bgImageHeight = this.bgImageHeight
+      if (scrollY > 0) {
+        blur = Math.min(this.maxTranslateY / bgImageHeight, scrollY / bgImageHeight) * 20
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
+      }
     }
   },
   mounted() {
@@ -100,7 +141,18 @@ export default {
     },
     onScroll(pos) {
       this.scrollY = -pos.y
-    }
+    },
+    selectItem({ song, index }) {
+      console.log('a')
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    random() {
+      this.randomPlay(this.songs)
+    },
+    ...mapActions(['selectPlay', 'randomPlay'])
   }
 }
 </script>
@@ -142,6 +194,34 @@ export default {
       overflow: hidden;
       transform-origin: top;
       background-size: cover;
+      .play-btn-wrapper {
+        position: absolute;
+        bottom: 20px;
+        z-index: 10;
+        width: 100%;
+        .play-btn {
+          box-sizing: border-box;
+          width: 135px;
+          padding: 7px 0;
+          margin: 0 auto;
+          text-align: center;
+          border: 1px solid $color-theme;
+          color: $color-theme;
+          border-radius: 100px;
+          font-size: 0;
+        }
+        .icon-play {
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 6px;
+          font-size: $font-size-medium-x;
+        }
+        .text {
+          display: inline-block;
+          vertical-align: middle;
+          font-size: $font-size-small;
+        }
+      }
       .filter {
         position: absolute;
         top: 0;
