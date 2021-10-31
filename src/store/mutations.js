@@ -15,7 +15,7 @@ const mutations = {
     state.currentIndex = index
   },
   setFullScreen(state, fullScreen) {
-    state.fullSreen = fullScreen
+    state.fullScreen = fullScreen
   }
 }
 
