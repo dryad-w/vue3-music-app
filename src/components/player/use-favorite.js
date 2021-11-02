@@ -15,7 +15,7 @@ export default function useFavorite() {
   function toggleFavorite(song) {
     let list = favoriteList.value
     if (isFavorite(song)) {
-      remove(FAVORITE_KEY, compare)
+      list = remove(FAVORITE_KEY, compare)
     } else {
       list = save(song, FAVORITE_KEY, compare, maxLen)
     }
