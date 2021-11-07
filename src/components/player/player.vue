@@ -26,7 +26,7 @@
         </div>
         <div
           class="middle"
-          @touchstart.prevent="onMiddleTouchStart"
+          @touchstart.stop.prevent="onMiddleTouchStart"
           @touchmove.prevent="onMiddleTouchMove"
           @touchend.prevent="onMiddleTouchEnd"
         >

@@ -15,6 +15,9 @@
                 @click="changeMode"
               ></i>
               <span class="text">{{modeText}}</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <scroll
@@ -54,6 +57,12 @@
             <span>关闭</span>
           </div>
         </div>
+        <confirm
+          ref="confirmRef"
+          @confirm="confirmClear"
+          text="是否清空播放列表？"
+          confirm-btn-text="清空"
+        ></confirm>
       </div>
     </transition>
   </teleport>
@@ -65,15 +74,18 @@
   import { useStore } from 'vuex'
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
+  import confirm from '@/components/base/confirm/confirm'
 
   export default {
   name: 'play-list',
   components: {
-    Scroll
+    Scroll,
+    confirm
   },
   setup() {
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const confirmRef = ref(null)
     const visible = ref(false)
     const removing = ref(false)
 
@@ -141,14 +153,27 @@
       }
       removing.value = true
       store.dispatch('removeSong', song)
+      if (!playlist.value.length) {
+        hide()
+      }
       setTimeout(() => {
         removing.value = false
       }, 300)
     }
 
+    function showConfirm() {
+      confirmRef.value.show()
+    }
+
+    function confirmClear() {
+      store.dispatch('clearSongList')
+      hide()
+    }
+
     return {
       scrollRef,
       listRef,
+      confirmRef,
       visible,
       removing,
       playlist,
@@ -158,6 +183,8 @@
       getCurrentIcon,
       selectItem,
       removeSong,
+      showConfirm,
+      confirmClear,
       // mode
       modeIcon,
       modeText,
@@ -218,6 +245,7 @@
             @include extend-click();
             .icon-clear {
               font-size: $font-size-medium;
+              color: $color-text-d;
             }
           }
         }
