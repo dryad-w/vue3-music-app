@@ -1,5 +1,5 @@
 <template>
-  <Scroll
+  <scroll
     class="index-list"
     :probe-type="3"
     @scroll="onScroll"
@@ -49,18 +49,18 @@
         </li>
       </ul>
     </div>
-  </Scroll>
+  </scroll>
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import scroll from '@/components/wrap-scroll'
 import useFixed from './useFixed'
 import useShortcut from './useShortcut'
 
 export default {
   name: 'index-list',
   components: {
-    Scroll
+    scroll
   },
   props: {
     data: {

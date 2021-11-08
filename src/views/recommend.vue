@@ -1,6 +1,6 @@
 <template>
   <div class="recommend"  v-loading:[loadingText]="loading">
-    <Scroll class="recommend-content">
+    <scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
           <div class="slider-content">
@@ -30,20 +30,20 @@
           </ul>
         </div>
       </div>
-    </Scroll>
+    </scroll>
   </div>
 </template>
 
 <script>
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider.vue'
-import Scroll from '@/components/base/scroll/scroll.vue'
+import scroll from '@/components/wrap-scroll'
 
 export default {
   name: 'recommend',
   components: {
     Slider,
-    Scroll
+    scroll
   },
   data() {
     return {
