@@ -3,7 +3,7 @@
     <indexList :data="singerList" @select="selectSinger"></indexList>
     <router-view v-slot="{ Component }">
       <transition appear name="slide">
-        <component :is="Component" :singer="selectedSinger"></component>
+        <component :is="Component" :data="selectedSinger"></component>
       </transition>
     </router-view>
   </div>
@@ -44,7 +44,6 @@ export default {
 
   async created() {
     const result = await getSingerList()
-    console.log(result)
     this.singerList = result.singers
   }
 }

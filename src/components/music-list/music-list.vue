@@ -1,7 +1,9 @@
 <template>
   <div class="music-list">
-    <div class="back"
-    @click="goBack">
+    <div
+      class="back"
+      @click="goBack"
+    >
       <i class="icon-back"></i>
     </div>
     <h1 class="title">{{title}}</h1>
@@ -33,7 +35,7 @@
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem"></song-list>
+        <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -65,7 +67,8 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉，没有找到可播放的歌曲'
-    }
+    },
+    rank: Boolean
   },
   data() {
     return {
