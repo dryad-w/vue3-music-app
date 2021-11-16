@@ -15,7 +15,7 @@
           <div
             class="progress-btn"
             :style="btnStyle"
-            @touchstart.stop.prevent="onTouchStart"
+            @touchstart.prevent="onTouchStart"
             @touchmove.prevent="onTouchMove"
             @touchend.prevent="onTouchEnd"
           ></div>
