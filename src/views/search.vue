@@ -3,21 +3,46 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <div class="search-content" v-show="!query">
-      <div class="hot-keys">
-        <h1 class="title">热门搜索</h1>
-        <ul>
-          <li
-            class="item"
-            v-for="item in hotKeys"
-            :key="item.id"
-            @click="addQuery(item.key)"
-          >
-            <span>{{item.key}}</span>
-          </li>
-        </ul>
+    <scroll
+      ref="scrollRef"
+      class="search-content"
+      v-show="!query"
+    >
+      <div>
+        <div class="hot-keys">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li
+              class="item"
+              v-for="item in hotKeys"
+              :key="item.id"
+              @click="addQuery(item.key)"
+            >
+              <span>{{item.key}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear" @click="showConfirm">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <confirm
+            ref="confirmRef"
+            text="是否清空所有搜索历史"
+            confirm-btn-text="清空"
+            @confirm="clearSearch"
+          ></confirm>
+          <search-list
+            :searches="searchHistory"
+            @select="addQuery"
+            @delete="deleteSearch"
+          ></search-list>
+        </div>
       </div>
-    </div>
+    </scroll>
     <div class="search-result" v-show="query">
       <suggest
         :query="query"
@@ -36,40 +61,65 @@
 <script>
 import searchInput from '@/components/search/search-input'
 import suggest from '@/components/search/suggest'
-import { ref } from 'vue'
+import searchList from '@/components/base/search-list/search-list'
+import { computed, nextTick, ref, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import useSearchHistory from '@/components/search/use-search-history'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
+import Scroll from '@/components/wrap-scroll'
+import Confirm from '@/components/base/confirm/confirm'
 
 export default {
   name: 'search',
   components: {
+    Confirm,
+    Scroll,
     searchInput,
-    suggest
+    suggest,
+    searchList
   },
   setup() {
     const query = ref('')
     const hotKeys = ref([])
     const selectedSinger = ref(null)
+    const scrollRef = ref(null)
+    const confirmRef = ref(null)
 
     const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
+
     const router = useRouter()
+    const { saveSearch, deleteSearch, clearSearch } = useSearchHistory()
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
     })
 
+    watch(query, async (newQuery) => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+
+    function refreshScroll() {
+      scrollRef.value.scroll.refresh()
+    }
+
     function addQuery(s) {
-      query.value = s
+      query.value = s.trim()
     }
 
     function selectSong(song) {
+      saveSearch(query.value)
       store.dispatch('addSong', song)
     }
 
     function selectSinger(singer) {
+      saveSearch(query.value)
       selectedSinger.value = singer
       cacheSinger(singer)
       router.push({
@@ -81,13 +131,24 @@ export default {
       storage.session.set(SINGER_KEY, singer)
     }
 
+    function showConfirm() {
+      confirmRef.value.show()
+    }
+
     return {
       query,
       hotKeys,
       selectedSinger,
+      scrollRef,
+      confirmRef,
       addQuery,
       selectSong,
-      selectSinger
+      selectSinger,
+      showConfirm,
+      clearSearch,
+      // search history
+      searchHistory,
+      deleteSearch
     }
   }
 }
@@ -122,6 +183,27 @@ export default {
           background: $color-highlight-background;
           font-size: $font-size-medium;
           color: $color-text-d;
+        }
+      }
+      .search-history {
+        position: relative;
+        margin: 0 20px;
+        .title {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          font-size: $font-size-medium;
+          color: $color-text-l;
+          .text {
+            flex: 1;
+          }
+          .clear {
+            @include extend-click();
+            .icon-clear {
+              font-size: $font-size-medium;
+              color: $color-text-d;
+            }
+          }
         }
       }
     }
