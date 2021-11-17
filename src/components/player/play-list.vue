@@ -53,6 +53,12 @@
               </li>
             </transition-group>
           </scroll>
+          <div class="list-add">
+            <dic class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到列表</span>
+            </dic>
+          </div>
           <div class="list-footer" @click.stop="hide">
             <span>关闭</span>
           </div>
@@ -63,6 +69,7 @@
           text="是否清空播放列表？"
           confirm-btn-text="清空"
         ></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -75,17 +82,20 @@
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
   import confirm from '@/components/base/confirm/confirm'
+  import addSong from '@/components/add-song/add-song'
 
   export default {
   name: 'play-list',
   components: {
     Scroll,
-    confirm
+    confirm,
+    addSong
   },
   setup() {
     const scrollRef = ref(null)
     const listRef = ref(null)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
     const visible = ref(false)
     const removing = ref(false)
 
@@ -170,10 +180,15 @@
       hide()
     }
 
+    function showAddSong() {
+      addSongRef.value.show()
+    }
+
     return {
       scrollRef,
       listRef,
       confirmRef,
+      addSongRef,
       visible,
       removing,
       playlist,
@@ -185,6 +200,7 @@
       removeSong,
       showConfirm,
       confirmClear,
+      showAddSong,
       // mode
       modeIcon,
       modeText,
@@ -287,6 +303,25 @@
             &.disable {
               color: $color-theme-d;
             }
+          }
+        }
+      }
+      .list-add {
+        width: 140px;
+        margin: 20px auto 30px auto;
+        .add {
+          display: flex;
+          align-items: center;
+          padding: 8px 16px;
+          border: 1px solid $color-text-l;
+          border-radius: 100px;
+          color: $color-text-l;
+          .icon-add {
+            margin-right: 5px;
+            font-size: $font-size-small-s;
+          }
+          .text {
+            font-size: $font-size-small;
           }
         }
       }
