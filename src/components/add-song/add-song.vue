@@ -15,10 +15,44 @@
           >
           </search-input>
         </div>
+        <div v-show="!query">
+          <switches
+            :items="['最近播放', '搜索历史']"
+            v-model="currentIndex"
+          ></switches>
+          <div class="list-wrapper">
+            <scroll
+              v-if="currentIndex === 0"
+              class="list-scroll"
+              ref="scrollRef"
+            >
+              <div class="list-inner">
+                <song-list
+                  :songs="playHistory"
+                  @select="selectSongBySongList"
+                ></song-list>
+              </div>
+            </scroll>
+            <scroll
+              v-if="currentIndex === 1"
+              class="list-scroll"
+              ref="scrollRef"
+            >
+              <div class="list-inner">
+                <search-list
+                  :searches="searchHistory"
+                  :showDelete="false"
+                  @select="addQuery"
+                ></search-list>
+              </div>
+            </scroll>
+          </div>
+        </div>
         <div class="search-result" v-show="query">
           <suggest
             :query="query"
             :show-singer="false"
+            @select-song="selectSongBySuggest"
           >
           </suggest>
         </div>
@@ -30,29 +64,86 @@
 <script>
 import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
-import { ref } from 'vue'
+import switches from '@/components/base/switches/switches'
+import scroll from '@/components/base/scroll/scroll'
+import songList from '@/components/base/song-list/song-list'
+import searchList from '@/components/base/search-list/search-list'
+import { computed, nextTick, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import useSearchHistory from '@/components/search/use-search-history'
+
 export default {
   name: 'add-song',
   components: {
     SearchInput,
-    Suggest
+    Suggest,
+    switches,
+    scroll,
+    songList,
+    searchList
   },
   setup() {
     const visible = ref(false)
     const query = ref('')
+    const currentIndex = ref(0)
+    const scrollRef = ref(null)
 
-    function show() {
+    const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
+    const playHistory = computed(() => store.state.playHistory)
+
+    const { saveSearch } = useSearchHistory()
+
+    watch(query, async (newQuery) => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+
+    async function show() {
       visible.value = true
+      await nextTick()
+      refreshScroll()
     }
 
     function hide() {
       visible.value = false
     }
+
+    function addQuery(s) {
+      query.value = s.trim()
+    }
+
+    function selectSongBySongList({ song }) {
+      addSong(song)
+    }
+
+    function selectSongBySuggest(song) {
+      addSong(song)
+      saveSearch(query.value)
+    }
+
+    function addSong(song) {
+      store.dispatch('addSong', song)
+    }
+
+    function refreshScroll() {
+      scrollRef.value.scroll.refresh()
+    }
+
     return {
       visible,
       query,
+      currentIndex,
+      scrollRef,
+      searchHistory,
+      playHistory,
       show,
-      hide
+      hide,
+      addQuery,
+      selectSongBySongList,
+      selectSongBySuggest
     }
   }
 }
@@ -94,7 +185,7 @@ export default {
       position: absolute;
       top: 165px;
       bottom: 0;
-      width: 100px;
+      width: 100%;
       .list-scroll {
         height: 100%;
         overflow: hidden;

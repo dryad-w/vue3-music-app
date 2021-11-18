@@ -138,6 +138,7 @@ import useCd from './use-cd'
 import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import useAnimations from './use-animations'
+import usePlayHistory from './use-play-history'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import Scroll from '@/components/base/scroll/scroll'
@@ -193,6 +194,7 @@ export default {
     } = useMiddleInteractive()
 
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimations()
+    const { savePlay } = usePlayHistory()
 
     // watch
     watch(currentSong, (newSong) => {
@@ -299,6 +301,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
 
     function error() {

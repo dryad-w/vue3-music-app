@@ -54,10 +54,10 @@
             </transition-group>
           </scroll>
           <div class="list-add">
-            <dic class="add" @click="showAddSong">
+            <div class="add" @click="showAddSong">
               <i class="icon-add"></i>
               <span class="text">添加歌曲到列表</span>
-            </dic>
+            </div>
           </div>
           <div class="list-footer" @click.stop="hide">
             <span>关闭</span>
