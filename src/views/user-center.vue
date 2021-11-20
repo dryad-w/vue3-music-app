@@ -15,6 +15,7 @@
     <div
       class="play-btn"
       v-if="currentList.length"
+      @click="random"
     >
       <i class="icon-play"></i>
       <span class="text">随机播放全部</span>
@@ -24,6 +25,7 @@
         <div class="list-inner">
           <song-list
             :songs="favoriteList"
+            @select="selectSong"
           >
           </song-list>
         </div>
@@ -32,6 +34,7 @@
         <div class="list-inner">
           <song-list
             :songs="playHistory"
+            @select="selectSong"
           >
           </song-list>
         </div>
@@ -44,7 +47,7 @@
 import switches from '@/components/base/switches/switches'
 import scroll from '@/components/wrap-scroll'
 import songList from '@/components/base/song-list/song-list'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'user-center',
@@ -76,7 +79,14 @@ export default {
   methods: {
     back() {
       this.$router.back()
-    }
+    },
+    selectSong({ song }) {
+      this.addSong(song)
+    },
+    random() {
+      this.randomPlay(this.currentList)
+    },
+    ...mapActions(['addSong', 'randomPlay'])
   }
 }
 </script>
