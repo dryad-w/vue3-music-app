@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const EER_OK = 0
-const baseURL = '/'
+// todo 加自己域名
+const baseURL = process.env.NODE_ENV === 'production' ? '/music-next' : '/'
 
 axios.defaults.baseURL = baseURL
 
