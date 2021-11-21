@@ -3,7 +3,9 @@ import { ref } from 'vue'
 export default function useMiddleInteractive() {
   const currentShow = ref('cd')
   const middleLStyle = ref(null)
-  const middleRStyle = ref(null)
+  const middleRStyle = ref({
+    transform: 'translate3d(0, 0, 0)'
+  })
 
   const touch = {}
   let currentView = 'cd'

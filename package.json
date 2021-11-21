@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "yarn build && nohup node backend/prod.server.js &"
+    "deploy": "yarn build && nohup node backend/prod.server.js &",
+    "local": "yarn build && node backend/test.server.js"
   },
   "dependencies": {
     "@better-scroll/core": "^2.2.1",
