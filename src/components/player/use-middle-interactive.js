@@ -74,6 +74,7 @@ export default function useMiddleInteractive() {
       opacity,
       transitionDuration: `${duration}ms`
     }
+
     middleRStyle.value = {
       transform: `translate3d(${offsetWidth}px, 0, 0)`,
       transitionDuration: `${duration}ms`
