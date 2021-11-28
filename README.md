@@ -1,4 +1,4 @@
-# vue3-music-app
+# Dryad Music
 
 ## Project setup
 ```

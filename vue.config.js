@@ -17,6 +17,63 @@ module.exports = {
       registerRouter(app)
     }
   },
+  chainWebpack: config => {
+    config
+      .plugin('html')
+      .tap(args => {
+        args[0].title = 'Dryad Music'
+        return args
+      })
+  },
+  pwa: {
+    name: 'DryadMusic',
+    themeColor: '#222',
+    msTileColor: '#222',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black',
+
+    // configure the workbox plugin
+    workboxPluginMode: 'GenerateSW',
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+      cleanupOutdatedCaches: true,
+      runtimeCaching: [
+        {
+          urlPattern: (ctx) => {
+            if (ctx.sameOrigin === false && ctx.url.test(new RegExp('^https*/music'))) {
+              return true
+            }
+            return false
+          },
+          handler: 'NetworkFirst',
+          options: {
+            cacheableResponse: {
+              statuses: [200]
+            }
+          }
+        },
+        {
+          urlPattern: new RegExp('.png$'),
+          handler: 'CacheFirst',
+          options: {
+            cacheableResponse: {
+              statuses: [200]
+            }
+          }
+        },
+        {
+          urlPattern: new RegExp('/api/'),
+          handler: 'NetworkFirst',
+          options: {
+            cacheableResponse: {
+              statuses: [200]
+            }
+          }
+        }
+      ]
+    }
+  },
   configureWebpack: (config) => {
     if (process.env.npm_config_report) {
       const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin

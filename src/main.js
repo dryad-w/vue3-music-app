@@ -12,6 +12,8 @@ import { processSongs } from '@/service/song'
 // 引入全局样式
 import '@/assets/scss/index.scss'
 
+import './registerServiceWorker'
+
 // 再初始化时更新储存的歌曲url
 const favoriteSongs = load(FAVORITE_KEY)
 if (favoriteSongs.length > 0) {
