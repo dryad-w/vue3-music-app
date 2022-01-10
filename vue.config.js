@@ -41,7 +41,7 @@ module.exports = {
       runtimeCaching: [
         {
           urlPattern: (ctx) => {
-            if (ctx.sameOrigin === false && ctx.url.test(new RegExp('^https*/music'))) {
+            if (ctx.sameOrigin === false && ctx.url.test(new RegExp('/music'))) {
               return true
             }
             return false
